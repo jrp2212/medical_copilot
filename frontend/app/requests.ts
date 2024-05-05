@@ -10,7 +10,6 @@ const baseUrl = 'http://127.0.0.1:8000';
  */
 export const xhrSubmitDashboard = async (payload: { medText: string; guideText: string }) => {
   try{
-    console.log(baseUrl);
     const url = cleanExcessSlashesInPath(`${baseUrl}/cases`);
     const {data} = await axios.post(url, payload);
     console.log("Data:", payload);

@@ -9,11 +9,10 @@ def gen_case_id():
     return "case_" + str(uuid4()).split("-")[0]
 
 class Case:
-    def __init__(self, model, tokenizer):
+    def __init__(self, payload):
         """ constuctor. assigns a unique case_id """
-        # base columns created with dynamic values in real time
-        self.med = ""
-        self.guide = ""
+        self.med = payload.get('medText', '')  
+        self.guide = payload.get('guideText', '') 
 
         self.case_id = gen_case_id()
         self.created_at = time()
@@ -23,8 +22,6 @@ class Case:
         self.summary = ""
         self.steps = []
 
-        self.model = model
-        self.tokenizer = tokenizer
         self.progress = 0 
 
     def to_json(self):
@@ -38,12 +35,12 @@ class Case:
         self.progress += 1
         self.status = status[index]
 
-        if index == 1:
-            self.procedure_name = llama.get_procedure_name(self.model, self.tokenizer, self.med, self.guide)
-            self.cpt_codes = llama.get_cpt_codes(self.model, self.tokenizer, self.med, self.guide)
+        # if index == 1:
+        #     self.procedure_name = llama.get_procedure_name(self.model, self.tokenizer, self.med, self.guide)
+        #     self.cpt_codes = llama.get_cpt_codes(self.model, self.tokenizer, self.med, self.guide)
         
         if index == 2:
-            self.summary = llama.get_summary(self.model, self.tokenizer, self.med, self.guide)
+            self.summary = llama.get_summary(self.med, self.guide)
         
         # if index == 3:
         #     self.steps = get_steps()
@@ -55,8 +52,8 @@ class Case:
                 json_data["case_id"] = self.case_id
                 json_data["status"] = self.status
                 json_data["created"] = self.created_at
-                json_data["procedure_name"] = self.procedure_name
-                json_data["cpt_codes"] = self.cpt_codes
+                # json_data["procedure_name"] = self.procedure_name
+                # json_data["cpt_codes"] = self.cpt_codes
                 json_data["summary"] = self.summary
                 #json_data["steps"] = self.steps
                 return json_data

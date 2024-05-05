@@ -102,9 +102,8 @@ export default function UploadSection({ onSubmitted }: IUploadProps) {
                 medText: medText,
                 guideText: guideText,
             };
-            // won't do this in prod, but doing it here for visual effect
-            // so you can actually see the UI
-            await simulateDelay(800);
+
+            //await simulateDelay(800);
             const caseId = await xhrSubmitDashboard(payload);
             onSubmitted({ data: { caseId }, error: null });
             toast.success("Data stored successfully!");
@@ -119,7 +118,7 @@ export default function UploadSection({ onSubmitted }: IUploadProps) {
 
     return (
         <>
-        <div className="upload-section-main w-full flex flex-row gap-2 items-center">
+        <div className="flex flex-row items-center w-full gap-2 upload-section-main">
             <div style={{ flex: 1 }}>
                 <div className="upload-container">
                     <SectionUploader
@@ -134,7 +133,7 @@ export default function UploadSection({ onSubmitted }: IUploadProps) {
                         value={medText}
                         onChange={handleMedTextChange}
                         placeholder="Enter details for Medical Record"
-                        className="mt-2 p-4 border rounded text-lg w-full" // Set width to full
+                        className="w-full p-4 mt-2 text-lg border rounded" // Set width to full
                         rows={4} // Adjust number of rows as needed
                     />
                 </div>
@@ -153,17 +152,17 @@ export default function UploadSection({ onSubmitted }: IUploadProps) {
                         value={guideText}
                         onChange={handleGuideTextChange}
                         placeholder="Enter details for Guidelines"
-                        className="mt-2 p-4 border rounded text-lg w-full" // Set width to full
+                        className="w-full p-4 mt-2 text-lg border rounded" // Set width to full
                         rows={4} // Adjust number of rows as needed
                         disabled={disableGuideSection}
                     />
                 </div>
             </div>
         </div>
-        <div className="w-full py-4 flex flex-row justify-center">
+        <div className="flex flex-row justify-center w-full py-4">
             {showContinueButton && (
                 <button
-                    className="bg-green-600 font-medium text-white py-2 px-4 rounded"
+                    className="px-4 py-2 font-medium text-white bg-green-600 rounded"
                     disabled={isSubmitting}
                     onClick={async () => await onSubmit()}>
                     {content.button.label}

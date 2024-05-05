@@ -1,40 +1,9 @@
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from case import Case
 from db import DB
+import llama_functions as llama
 
-import torch
-import os
-
-
-
-def load_or_download_model(model_name: str, model_dir: str):
-    if not os.path.exists(model_dir):
-        print("Directory Found")
-        os.makedirs(model_dir, exist_ok=True)
-    
-    try:
-        model = AutoModel.from_pretrained(model_dir)
-        print("Model loaded from local directory.")
-    except Exception as e:
-        print("Model not found locally, downloading from Hugging Face.")
-        model = AutoModelForCausalLM.from_pretrained(
-            model_name,
-            load_in_8bit=True,
-            device_map="auto",
-        )
-
-        model.save_pretrained(model_dir)
-        print("Model downloaded and saved locally.")
-    
-    return model
-
-# load llama3
-model_name = "meta-llama/Meta-Llama-3-8B-Instruct"  # Specify the model name
-model_dir = "/models/llama3"  # Specify the directory to save/load the model
-model = load_or_download_model(model_name, model_dir)
-tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 
 # warning: It will wipe out when the server restarts ⚠️
@@ -57,7 +26,8 @@ app.add_middleware(
 @app.post("/cases")
 async def create_case():
     try:
-        case = Case(model, tokenizer)
+        payload = await request.json()
+        case = Case(payload)
         db.put(case.case_id, case)
         print(f"created case_id: {case.case_id}. Count: {db.length()}")
         return {"id": case.case_id}
