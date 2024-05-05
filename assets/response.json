@@ -1,0 +1,10 @@
+{
+    "case_id": "",
+    "status": "",
+    "procedure_name": "",
+    "cpt_codes": [],
+    "summary": null,
+    "is_met": false,
+    "is_complete": false,
+    "steps": []
+}
