@@ -1,18 +1,19 @@
 import { cleanExcessSlashesInPath } from "@/utils";
 import axios, { AxiosError, AxiosResponse } from "axios";
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL_API;
-
+const baseUrl = 'http://127.0.0.1:8000';
 
 /**
  * POST /cases
  * create a new case
  * @returns a string repr the case id
  */
-export const xhrSubmitDashboard = async () => {
+export const xhrSubmitDashboard = async (payload: { medText: string; guideText: string }) => {
   try{
+    console.log(baseUrl);
     const url = cleanExcessSlashesInPath(`${baseUrl}/cases`);
-    const {data} = await axios.post(url);
+    const {data} = await axios.post(url, payload);
+    console.log("Data:", payload);
     return data?.id || "";
   } catch(error: AxiosError | unknown){
     if(error instanceof AxiosError){

@@ -31,6 +31,8 @@ interface IUploadProps {
 export default function UploadSection({ onSubmitted }: IUploadProps) {
     const [medResource, setMed] = useState("");
     const [guideResource, setGuide] = useState("");
+    const [medText, setMedText] = useState(""); // State for medical record text input
+    const [guideText, setGuideText] = useState("");
     const [isSubmitting, setSubmitting] = useState(false);
     const { setGuidelinesFile, setMedicalRecord } = useDashboard();
     const toastId = useRef<any>();
@@ -45,6 +47,14 @@ export default function UploadSection({ onSubmitted }: IUploadProps) {
         medResource.trim().length > 0 &&
         guideResource &&
         guideResource.trim().length > 0;
+
+    const handleMedTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+            setMedText(event.target.value);
+    };
+    
+    const handleGuideTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setGuideText(event.target.value);
+    };
 
     // mock: simulate upload using 3s delay
     const simulateUpload = async () => {
@@ -88,13 +98,19 @@ export default function UploadSection({ onSubmitted }: IUploadProps) {
         try {
             showToast();
             setSubmitting(true);
+            const payload = {
+                medText: medText,
+                guideText: guideText,
+            };
             // won't do this in prod, but doing it here for visual effect
             // so you can actually see the UI
             await simulateDelay(800);
-            const caseId = await xhrSubmitDashboard();
+            const caseId = await xhrSubmitDashboard(payload);
             onSubmitted({ data: { caseId }, error: null });
+            toast.success("Data stored successfully!");
         } catch (error) {
             onSubmitted({ data: null, error });
+            toast.error("Failed to store data.");
         } finally {
             setSubmitting(false);
             hideToast();
@@ -103,35 +119,58 @@ export default function UploadSection({ onSubmitted }: IUploadProps) {
 
     return (
         <>
-            <div className="upload-section-main w-full flex flex-row gap-2 items-center">
-                <SectionUploader
-                    task={simulateUpload}
-                    onComplete={(r: any, url: string) => updateStatus(DocTypes.medrec, r)}
-                    disabled={false}
-                    background="#3b83f6"
-                    title={content.medrec.title}
-                    labels={content.medrec.labels}
-                />
-                <SectionUploader
-                    task={simulateUpload}
-                    onComplete={(r: any, url: string) => updateStatus(DocTypes.guidelines, r)}
-                    disabled={disableGuideSection}
-                    background="#f97516"
-                    title={content.guide.title}
-                    labels={content.guide.labels}
-                />
+        <div className="upload-section-main w-full flex flex-row gap-2 items-center">
+            <div style={{ flex: 1 }}>
+                <div className="upload-container">
+                    <SectionUploader
+                        task={simulateUpload}
+                        onComplete={(r: any, url: string) => updateStatus(DocTypes.medrec, r)}
+                        disabled={false}
+                        background="#3b83f6"
+                        title={content.medrec.title}
+                        labels={content.medrec.labels}
+                    />
+                    <textarea
+                        value={medText}
+                        onChange={handleMedTextChange}
+                        placeholder="Enter details for Medical Record"
+                        className="mt-2 p-4 border rounded text-lg w-full" // Set width to full
+                        rows={4} // Adjust number of rows as needed
+                    />
+                </div>
             </div>
-            <ToastContainer />
-            <div className="w-full py-4 flex flex-row justify-center">
-                {showContinueButton && (
-                    <button
-                        className="bg-green-600 font-medium text-white py-2 px-4 rounded"
-                        disabled={isSubmitting}
-                        onClick={async () => await onSubmit()}>
-                        {content.button.label}
-                    </button>
-                )}
+            <div style={{ flex: 1 }}>
+                <div className="upload-container">
+                    <SectionUploader
+                        task={simulateUpload}
+                        onComplete={(r: any, url: string) => updateStatus(DocTypes.guidelines, r)}
+                        disabled={disableGuideSection}
+                        background="#f97516"
+                        title={content.guide.title}
+                        labels={content.guide.labels}
+                    />
+                    <textarea
+                        value={guideText}
+                        onChange={handleGuideTextChange}
+                        placeholder="Enter details for Guidelines"
+                        className="mt-2 p-4 border rounded text-lg w-full" // Set width to full
+                        rows={4} // Adjust number of rows as needed
+                        disabled={disableGuideSection}
+                    />
+                </div>
             </div>
+        </div>
+        <div className="w-full py-4 flex flex-row justify-center">
+            {showContinueButton && (
+                <button
+                    className="bg-green-600 font-medium text-white py-2 px-4 rounded"
+                    disabled={isSubmitting}
+                    onClick={async () => await onSubmit()}>
+                    {content.button.label}
+                </button>
+            )}
+        </div>
+        <ToastContainer />
         </>
     );
 }
