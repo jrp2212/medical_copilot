@@ -34,8 +34,8 @@ class Case:
         self.status = status[index]
 
         if index == 1:
-            self.procedure_name = llama.get_procedure_name(self.model, self.tokenizer, self.med, self.guide)
-            self.cpt_codes = llama.get_cpt_codes(self.model, self.tokenizer, self.med, self.guide)
+            self.procedure_name = llama.get_procedure_name(self.med, self.guide)
+            self.cpt_codes = llama.get_cpt_codes(self.med, self.guide)
         
         if index == 2:
             self.summary = llama.get_summary(self.med, self.guide)
