@@ -31,30 +31,28 @@ export default function CaseInfo({ caseId = "" }: ICaseInfoProps) {
     const content = copytext.en.caseInfo;
 
     // fetch the case for this caseId prop, set that in the state
-    const fetchCase = async (force: boolean = false) => {
-        // exit if we have case data already and we're not forcing
-        // or if there's already a fetch in progress
+    const fetchCase = async (force: boolean = false, attempt: number = 1) => {
         if ((caseData && force === false) || inProgress) return;
-
-        // exit if the record status is complete. No more changes
-        // to fetch for this case id
-        if (caseData?.case.status === "complete") {
+        if (caseData?.case?.status === "complete") {
             console.log("🏁 record completed");
             return;
         }
-
+    
         try {
             setInProgress(true);
             await simulateDelay(2000);
             const caseInfo = await xhrReadCaseById(caseId);
             setCase({ error: CaseErrorTypes.none, case: parseCaseInfo(caseInfo) });
-
-            // trigger a timer
         } catch (err: any) {
             const { status } = err;
             if (status === 404) {
                 setCase({ error: CaseErrorTypes.not_found, case: null });
-            } else setCase({ error: CaseErrorTypes.unknown, case: null });
+            } else {
+                setCase({ error: CaseErrorTypes.unknown, case: null });
+            }
+            if (attempt < 3) {
+                setTimeout(() => fetchCase(force, attempt + 1), 5000); // Retry after 5 seconds
+            }
         } finally {
             setInProgress(false);
             setTicker(true);

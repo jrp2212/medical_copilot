@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from case import Case
 from db import DB
@@ -19,12 +19,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.on_event("startup")
+async def startup_event():
+    model_name = "meta-llama/Meta-Llama-3-8B-Instruct"
+    model_dir = "models/llama3"
+    llama.load_model(model_name, model_dir)
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    llama.unload_model()
+
 
 # ---------------------------------------------------------------------------
 # POST /cases
 # creates a new case with a unique id, adds it to our DB
 @app.post("/cases")
-async def create_case():
+async def create_case(request: Request):
     try:
         payload = await request.json()
         case = Case(payload)
@@ -33,6 +43,7 @@ async def create_case():
         return {"id": case.case_id}
     except Exception as err:
         msg = f"error in creating case: {str(err)}"
+        print(msg)
         raise HTTPException(status_code=500, detail=msg)
 
 # ---------------------------------------------------------------------------
@@ -81,4 +92,5 @@ async def get_all_cases(page: int = Query(1, alias="page"), size: int = Query(20
 async def root():
     url_list = [{"path": route.path, "name": route.name} for route in app.routes]
     return url_list
+
 

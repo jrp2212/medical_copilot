@@ -31,20 +31,19 @@ class Case:
 
         # Ensure progress index is within bounds
         index = min(self.progress, len(file_paths) - 1)
-
-        self.progress += 1
         self.status = status[index]
 
-        # if index == 1:
-        #     self.procedure_name = llama.get_procedure_name(self.model, self.tokenizer, self.med, self.guide)
-        #     self.cpt_codes = llama.get_cpt_codes(self.model, self.tokenizer, self.med, self.guide)
+        if index == 1:
+            self.procedure_name = llama.get_procedure_name(self.model, self.tokenizer, self.med, self.guide)
+            self.cpt_codes = llama.get_cpt_codes(self.model, self.tokenizer, self.med, self.guide)
         
         if index == 2:
             self.summary = llama.get_summary(self.med, self.guide)
         
         # if index == 3:
         #     self.steps = get_steps()
-
+        
+        self.progress += 1
         file_path = file_paths[index]
         try:
             with open(file_path, 'r') as file:
@@ -53,7 +52,7 @@ class Case:
                 json_data["status"] = self.status
                 json_data["created"] = self.created_at
                 # json_data["procedure_name"] = self.procedure_name
-                # json_data["cpt_codes"] = self.cpt_codes
+                json_data["cpt_codes"] = self.cpt_codes
                 json_data["summary"] = self.summary
                 #json_data["steps"] = self.steps
                 return json_data
