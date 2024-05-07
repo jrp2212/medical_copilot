@@ -146,7 +146,6 @@ def get_steps(med, guide, key):
     {"role": "user", "content": f"Question: {first_question}\nOptions: {options}\n\nGuideline Document: {guide}\n\nMedical Record: {med}"},
     ]
 
-    # Generate the model's response
     input_ids = tokenizer.apply_chat_template(
         messages,
         add_generation_prompt=True,
