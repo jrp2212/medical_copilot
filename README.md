@@ -4,9 +4,7 @@
 <p align="center">
     <h1 align="center">MEDICAL_COPILOT</h1>
 </p>
-<p align="center">
-    <em>HTTP error 429 for prompt `slogan`</em>
-</p>
+
 <p align="center">
 	<img src="https://img.shields.io/github/license/jrp2212/medical_copilot?style=flat&color=0080ff" alt="license">
 	<img src="https://img.shields.io/github/last-commit/jrp2212/medical_copilot?style=flat&logo=git&logoColor=white&color=0080ff" alt="last-commit">
