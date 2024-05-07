@@ -306,7 +306,7 @@ git clone https://github.com/jrp2212/medical_copilot
 2. Change to the backend directory:
 
 ```sh
-cd medical_copilot\backend
+cd medical_copilot/backend
 ```
 
 3. Install Requirements/Dependencies
@@ -344,10 +344,10 @@ npm run dev
 
 ###  Tests
 
-To execute tests, run:
+To execute tests, run in ~/medical_copilot/backend:
 
 ```sh
-npm test
+pytest
 ```
 
 ---
