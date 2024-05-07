@@ -4,7 +4,7 @@
 install requirements using pip 
 
 ```
-(venv)$ pip3 install -r requirements.txt
+$ pip install -r requirements.txt
 ```
 
 ### Run the backend using uvicorn
