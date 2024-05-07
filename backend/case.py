@@ -5,7 +5,6 @@ import json
 import llama_functions as llama
 
 def gen_case_id():
-    # using this for now, but can be a bit more scalable later on
     return "case_" + str(uuid4()).split("-")[0]
 
 class Case:
@@ -29,7 +28,6 @@ class Case:
         file_paths = ["../assets/response.json", "../assets/response-1.json", "../assets/response-2.json", "../assets/response-3.json"]
         status = ["started", "processing", "processing", "complete"]
 
-        # Ensure progress index is within bounds
         index = min(self.progress, len(file_paths) - 1)
         self.status = status[index]
 
@@ -40,10 +38,6 @@ class Case:
         if index == 2:
             self.summary = llama.get_summary(self.med, self.guide)
         
-        # if index == 3:
-        #     self.steps = get_steps()
-        
-        self.progress += 1
         file_path = file_paths[index]
         try:
             with open(file_path, 'r') as file:
@@ -51,10 +45,24 @@ class Case:
                 json_data["case_id"] = self.case_id
                 json_data["status"] = self.status
                 json_data["created"] = self.created_at
-                # json_data["procedure_name"] = self.procedure_name
+                json_data["procedure_name"] = self.procedure_name
                 json_data["cpt_codes"] = self.cpt_codes
                 json_data["summary"] = self.summary
-                #json_data["steps"] = self.steps
+            
+                if index == 3:
+                    generated_step = llama.get_steps(self.med, self.guide, 0)
+                    print(generated_step)
+                    for step in json_data["steps"]:
+                        if step["key"] == generated_step["key"]:
+                            step.update(generated_step)
+
+                    # iterator for going through all questions
+                    # for key, step in enumerate(json_data["steps"]):
+                    #     generated_step = llama.get_steps(self.med, self.guide, key)
+                    #     if step["key"] == generated_step["key"]:
+                    #         step.update(generated_step)
+
+                self.progress += 1
                 return json_data
         except Exception as err:
             print(f"Error in reading json file: {err}")
