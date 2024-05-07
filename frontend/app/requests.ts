@@ -1,7 +1,7 @@
 import { cleanExcessSlashesInPath } from "@/utils";
 import axios, { AxiosError, AxiosResponse } from "axios";
 
-const baseUrl = 'http://34.171.119.240:8000';
+const baseUrl = 'http://35.184.127.166:8000';
 
 /**
  * POST /cases
